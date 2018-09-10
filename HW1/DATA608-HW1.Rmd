@@ -1,0 +1,104 @@
+---
+title: "DATA-608 Project 1"
+author: "Harpreet Shoker"
+output:
+  pdf_document: default
+  html_document:
+    highlight: pygments
+    theme: cerulean
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Loading libraries
+
+```{r}
+library(ggplot2)
+library(RCurl)
+library(tidyverse)
+library(knitr)
+library(dplyr)
+library(scales)
+```
+
+This data about the 5,000 fastest growing companies in the US, as compiled by Inc. magazine. 
+Reading the data from github
+
+```{r cars}
+info <- read.csv("https://raw.githubusercontent.com/charleyferrari/CUNY_DATA608/master/lecture1/Data/inc5000_data.csv", header= TRUE)
+```
+
+Previewing the data
+
+```{r}
+knitr::kable(head(info))
+
+summary(info)
+```
+
+
+
+1. Create a graph that shows the distribution of companies in the dataset by State (ie how many are in each state). There are a lot of States, so consider which axis you should use. This visualization is ultimately going to be consumed on a 'portrait' oriented screen (ie taller than wide), which should further guide your layout choices.
+```{r}
+statedata <- info %>% 
+             group_by(State) %>% summarise(total = n()) %>% 
+             arrange(desc(total))
+```
+```{r}
+plot1 <- ggplot(data = statedata, aes(x=reorder(State, total) , y=total, fill=total)) +
+      geom_bar(stat="identity", position=position_dodge(), colour="black", width = 0.5) +
+      coord_flip() +   scale_fill_gradient(low="light grey", high="dark grey") + scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+      guides(fill=FALSE) +
+      ggtitle("Number of Companies by State") +
+      xlab("States") + ylab("Total Number of Companies") +
+       theme(panel.background = element_blank())
+
+plot1
+```
+
+The plot is sorted by state counts
+Removed the background 
+Various color themes were considered - gradient from highest to lowest count
+
+QUESTION 2
+Lets dig in on the state with the 3rd most companies in the data set. Imagine you work for the state and are interested in how many people are employed by companies in different industries. Create a plot that shows the average and/or median employment by industry for companies in this state (only use cases with full data, use R's complete.cases() function.) In addition to this, your graph should show how variable the ranges are, and you should deal with outliers.
+
+```{r}
+#filter for third highest state count and remove incomplete cases
+statedata3 <- toString(statedata$State[3])
+data3 <- info %>% 
+  filter(State == statedata3) %>% 
+  filter(complete.cases(.)) %>% 
+  group_by(Industry) %>% 
+  summarise(indMean = mean(Employees),
+            indMed = median(Employees)) %>% 
+  gather(statType, Amount, indMean, indMed)
+```
+```{r}
+plot2 <- ggplot(data = data3, aes(x = Industry, y = Amount)) +
+  geom_bar(stat = 'identity', aes(fill = statType), position = 'dodge') +
+  scale_fill_manual(values = c('light blue', 'grey33'))+
+  geom_hline(yintercept=seq(1, 1500, 100), col="white", lwd=0.5) +
+  coord_flip()
+plot2
+```
+QUESTION 3
+Now imagine you work for an investor and want to see which industries generate the most revenue per employee. Create a chart that makes this information clear. Once again, the distribution per industry should be shown.
+
+```{r}
+data4 = info[complete.cases(info),]
+
+data4 = group_by(data4,Industry)
+data4 = summarize(data4, total_employees=sum(Employees),total_revenue=sum(Revenue),growth_rate = mean(Growth_Rate))
+data4$avgRev = data4$total_revenue/data4$total_employees
+compDF = data4[!data4$Industry=='Computer Hardware' & !data4$Industry=='Human Resources',]
+compDF$scaledAR = scale(compDF$avgRev)
+ggplot(data4,aes(x=reorder(Industry,avgRev),y=avgRev,fill=growth_rate)) + scale_fill_gradient(low="turquoise", high="orange")+ 
+ggtitle("Revenue per employee by industry") + labs(y = "Industry", x = "Revenue per employee")+ 
+geom_bar(stat='identity') +coord_flip()
+```
+
+Sorted by amount

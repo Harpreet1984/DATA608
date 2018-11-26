@@ -1,0 +1,85 @@
+<html>
+<head><title>Intro to JS in a Browser</title></head>
+
+<body>
+<h1>Intro to JS in a Browser</h1>
+<h2>All of the below is created with Javascript. </h2>
+
+<script type="text/javascript">
+document.write('<br><p>Input a string with size 10 characters !!')
+
+//function to reverse the string alphabats
+function reverseStr(inputStr){
+	var charArray = inputStr.split("");
+	var reverseCharArray =  charArray.reverse();
+	var reverseStr = reverseCharArray.join("");
+
+	var str;
+	str = 'Reverse of word ' + inputStr + ' is  ' + reverseStr
+	return str;
+
+};
+
+function calcReverseStr () {
+	var t = document.getElementById("target");
+	t.innerHTML = reverseStr(document.getElementById('word').value);
+};
+</script>
+
+<p>
+<form>
+    <input id="word" type="string" size="10">
+    <input type="button" value="check" onClick="calcReverseStr();">
+</form>
+</p>
+
+<div id="target"></div>
+
+<script type="text/javascript">
+document.write('<br><p>Input a number !!')
+
+document.write('<br><p>First 20 multiples !!')
+//function to get first 20 multiples
+function getMultiples (num) {
+	var str= '<table>';
+	var i;
+	var j = 0;
+	for (i =1; i < 21 ; i ++ ){
+	//document.write(i);
+		if (j == 0 ) {
+			//document.write(j);
+			str = str + '<tr>' ;
+		} else if ( j == 4) {
+			//document.write(j);
+			str = str + '</tr>' ;
+			j = 0;
+		}
+		//document.write(j);
+		multipleNum = num * i ;
+		str = str + '<td>' + multipleNum + '</td>'
+		j = j+1 ;
+	};
+	//document.write(str)
+	str = str + '</table>';
+	return str;
+};
+
+function calcGetMultiples () {
+	var table = document.createElement('table');
+	table.innerHTML = getMultiples(document.getElementById('num').value)
+	document.getElementById("targetNew").appendChild(table);
+
+};
+</script>
+
+<p>
+<form>
+    <input id="num" type="number" size="10">
+    <input type="button" value="check" onClick="calcGetMultiples();">
+</form>
+</p>
+
+<div id="targetNew"></div>
+
+</body>
+</html>

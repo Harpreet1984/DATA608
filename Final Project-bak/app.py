@@ -2,7 +2,7 @@
 """
 DATA 608 Final Project: Canadian Household Debt
 Authors:
-    Harpreet Shocker
+    Harpreet Shoker
 """
 
 from flask import Flask, render_template, request

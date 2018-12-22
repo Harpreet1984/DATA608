@@ -72,4 +72,4 @@ Data storage: MySQL
 CUNY DATA608 Final Project
 
 ## Development:
-Harpreet Shocker
+Harpreet Shoker
